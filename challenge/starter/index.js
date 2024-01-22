@@ -12,30 +12,102 @@ const render = require("./src/page-template.js");
 
 // TODO: Write Code to gather information about the development team members, and render the HTML file.
 
-/*   * Write code in `index.js` that uses inquirer to gather information about the development team members and creates objects for each team member using the correct classes as blueprints.
- * When a user starts the application then they are prompted to enter the **team manager**’s:
- * Name
- * Employee ID
- * Email address
- * Office number
- * When a user enters those requirements then the user is presented with a menu with the option to:
- * Add an engineer
- * Add an intern
- * Finish building the team
- * When a user selects the **engineer** option then a user is prompted to enter the following and then the user is taken back to the menu:
- * Engineer's Name
- * ID
- * Email
- * GitHub username
- * When a user selects the intern option then a user is prompted to enter the following and then the user is taken back to the menu:
- * Intern’s name
- * ID
- * Email
- * School
- * When a user decides to finish building their team then they exit the application, and the HTML is generated.
- * Call the `render` function (provided for you) and pass in an array containing all employee objects;
- * The `render` function will generate and return a block of HTML including templated divs for each employee!
- * Create an HTML file using the HTML returned from the `render` function.
- * Write it to a file named `team.html` in the `output` folder.
- * You can use the provided variable `outputPath` to target this location.
- */
+const teamMembers = [];
+
+// Questions for the Manager
+const managerQuestions = [
+  // Add questions for the manager (Name, ID, Email, Office Number)
+];
+
+// Questions for the Engineer
+const engineerQuestions = [
+  // Add questions for the engineer (Name, ID, Email, GitHub username)
+];
+
+// Questions for the Intern
+const internQuestions = [
+  // Add questions for the intern (Name, ID, Email, School)
+];
+
+// Function to prompt user for Manager information
+function promptManager() {
+  inquirer.prompt(managerQuestions).then((answers) => {
+    const manager = new Manager(
+      answers.name,
+      answers.id,
+      answers.email,
+      answers.officeNumber
+    );
+    teamMembers.push(manager);
+    menu();
+  });
+}
+
+// Function to prompt user for Engineer information
+function promptEngineer() {
+  inquirer.prompt(engineerQuestions).then((answers) => {
+    const engineer = new Engineer(
+      answers.name,
+      answers.id,
+      answers.email,
+      answers.github
+    );
+    teamMembers.push(engineer);
+    menu();
+  });
+}
+
+// Function to prompt user for Intern information
+function promptIntern() {
+  inquirer.prompt(internQuestions).then((answers) => {
+    const intern = new Intern(
+      answers.name,
+      answers.id,
+      answers.email,
+      answers.school
+    );
+    teamMembers.push(intern);
+    menu();
+  });
+}
+
+// Function to display the menu
+function menu() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "choice",
+        message: "What would you like to do?",
+        choices: ["Add Engineer", "Add Intern", "Finish Building the Team"],
+      },
+    ])
+    .then((answers) => {
+      switch (answers.choice) {
+        case "Add Engineer":
+          promptEngineer();
+          break;
+        case "Add Intern":
+          promptIntern();
+          break;
+        case "Finish Building the Team":
+          generateHTML();
+          break;
+        default:
+          break;
+      }
+    });
+}
+
+// Function to generate HTML and write it to a file
+function generateHTML() {
+  const html = render(teamMembers);
+  const outputPath = path.join(__dirname, "output", "team.html");
+
+  fs.writeFileSync(outputPath, html);
+
+  console.log(`Team HTML file generated at ${outputPath}`);
+}
+
+// Start the application by prompting for Manager information
+promptManager();
